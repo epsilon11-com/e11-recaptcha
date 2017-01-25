@@ -42,6 +42,8 @@ register_deactivation_hook(__FILE__, array('e11Recaptcha', 'plugin_deactivation'
 
 require_once(plugin_dir_path(__FILE__) . 'class.e11Recaptcha.php');
 
+add_action('init', array('e11Recaptcha', 'init'));
+
 if (is_admin()) {
   require_once(plugin_dir_path(__FILE__) . 'class.e11RecaptchaAdmin.php');
 

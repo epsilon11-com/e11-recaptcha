@@ -18,11 +18,60 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 class e11Recaptcha {
+  private static $initialized = false;
+
   public static function plugin_activation() {
 
   }
 
   public static function plugin_deactivation() {
 
+  }
+
+  /**
+   * Add the reCAPTCHA script to the header.
+   */
+  public static function add_recaptcha_script() {
+    echo '<script src=\'https://www.google.com/recaptcha/api.js\'></script>' . "\n";
+  }
+
+  /**
+   * Attach a reCAPTCHA field to the area after the "comment" field on comment
+   * forms.
+   *
+   * [TODO] Add admin interface to control whether field is used for all
+   *        comments, for comments made without being logged in, or not at all.
+   *
+   * @param $comment_fields
+   * @return mixed
+   */
+  public static function comment_form_captcha($comment_fields) {
+
+    // Push reCAPTCHA field into the comment field code, to ensure it can
+    // appear whether a user is logged in or not.
+
+    $comment_fields['comment'] = $comment_fields['comment'] . '
+      <p class="comment-form-e11-recaptcha">
+        <label for="comment-form-e11-recaptcha">Recaptcha</label>
+        <div id="comment-form-e11-recaptcha"></div>
+      </p>';
+
+    return $comment_fields;
+  }
+
+  /**
+   * [TODO] Add admin interface to set Google ReCAPTCHA API key, and read it
+   *        in from database here.
+   */
+  public static function init() {
+    if (self::$initialized) {
+      return;
+    }
+
+    self::$initialized = true;
+
+    add_filter('wp_headers', array('e11Recaptcha', 'add_recaptcha_script'));
+
+    add_filter('comment_form_fields', array('e11Recaptcha', 'comment_form_captcha'));
   }
 }

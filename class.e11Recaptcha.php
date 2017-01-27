@@ -32,6 +32,8 @@ class e11Recaptcha {
    * Add the reCAPTCHA script to the header.
    */
   public static function add_recaptcha_script() {
+    // [TODO] Can this be replaced with wp_register_script()/wp_enqueue_script() calls?
+
     echo '<script src=\'https://www.google.com/recaptcha/api.js\'></script>' . "\n";
   }
 
@@ -40,10 +42,12 @@ class e11Recaptcha {
    * forms.
    *
    * [TODO] Add admin interface to control whether field is used for all
-   *        comments, for comments made without being logged in, or not at all.
+   * comments, for comments made without being logged in, or not at all.
    *
-   * @param $comment_fields
-   * @return mixed
+   * @param array $comment_fields Associative array of comment field HTML
+   *                              keyed by field name
+   * @return array Filtered $comment_fields with "comment" field altered to
+   *               include reCAPTCHA HTML
    */
   public static function comment_form_captcha($comment_fields) {
 

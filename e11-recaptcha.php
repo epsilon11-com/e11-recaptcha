@@ -31,6 +31,8 @@ License: BSD
 Text Domain: recaptcha
 */
 
+define('E11_RECAPTCHA_VERSION', '1.0');
+
 // Don't run if called directly.
 
 if (!function_exists('add_action')) {

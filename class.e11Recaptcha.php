@@ -29,15 +29,6 @@ class e11Recaptcha {
   }
 
   /**
-   * Add the reCAPTCHA script to the header.
-   */
-  public static function add_recaptcha_script() {
-    // [TODO] Can this be replaced with wp_register_script()/wp_enqueue_script() calls?
-
-    echo '<script src=\'https://www.google.com/recaptcha/api.js\'></script>' . "\n";
-  }
-
-  /**
    * Attach a reCAPTCHA field to the area after the "comment" field on comment
    * forms.
    *
@@ -74,7 +65,8 @@ class e11Recaptcha {
 
     self::$initialized = true;
 
-    add_filter('wp_headers', array('e11Recaptcha', 'add_recaptcha_script'));
+    wp_register_script('recaptcha-api-js', 'https://www.google.com/recaptcha/api.js' , '', '', true);
+    wp_enqueue_script('recaptcha-api-js');
 
     add_filter('comment_form_fields', array('e11Recaptcha', 'comment_form_captcha'));
   }

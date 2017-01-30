@@ -51,7 +51,7 @@ class e11Recaptcha {
     // Check if comment fields were saved in cookies.  This is done to preserve
     // comment details if a reCAPTCHA solution fails to pass.
 
-    //var_export($wp_query);
+    $captchaFailed = false;
 
     if (isset($wp_query->e11_recaptcha_comment)) {
 
@@ -76,6 +76,10 @@ class e11Recaptcha {
       if (isset($comment_fields['url'])) {
         $comment_fields['url'] = preg_replace('/value\s*=\s*[\'"].*[\'"]/i', 'value="' . $comment['url'] . '"', $comment_fields['url']);
       }
+
+      // Note that the previous CAPTCHA solution failed.
+
+      $captchaFailed = true;
     }
     
 
@@ -93,11 +97,23 @@ class e11Recaptcha {
     }
 
     // Push reCAPTCHA field into the comment field code, to ensure it can
-    // appear whether a user is logged in or not.
+    // appear whether a user is logged in or not.  Include an error message
+    // if the previous CAPTCHA solution was not accepted by Google.
 
-    $comment_fields['comment'] = $comment_fields['comment'] . '
+    if ($captchaFailed) {
+      $comment_fields['comment'] .= '
+      <p class="comment-form-e11-recaptcha-failed">
+        <label for="comment-form-e11-recaptcha-failed"></label>
+        <span id="comment-form-e11-recaptcha-failed">
+        ' . __('Failed to save comment.  Please solve the reCAPTCHA below to continue.') . '
+        </span>
+      </p>
+      ';
+    }
+
+    $comment_fields['comment'] .= '
       <p class="comment-form-e11-recaptcha">
-        <label for="comment-form-e11-recaptcha">Recaptcha</label>
+        <label for="comment-form-e11-recaptcha"></label>
         <span id="comment-form-e11-recaptcha" class="g-recaptcha" data-sitekey="'
           . esc_html(self::$siteKey)
           . '" />
@@ -107,6 +123,15 @@ class e11Recaptcha {
     return $comment_fields;
   }
 
+  /**
+   * If reCAPTCHAs are enabled, send the user's reCAPTCHA solution (if present)
+   * to Google and check the response.  Prevent the comment from saving if
+   * the reCAPTCHA solution failed, instead storing it in a cookie that will
+   * be used to repopulate the comment form after the user is redirected back
+   * to it.
+   *
+   * @param integer $postID ID of post comment is being made under.
+   */
   public static function check_comment_captcha($postID) {
 
     // Don't check reCAPTCHA if disabled on comments.
@@ -124,35 +149,106 @@ class e11Recaptcha {
 
     // [TODO] Check reCAPTCHA.
 
-    // reCAPTCHA verify failed.  Bounce back to comment area.
+    $captchaSolved = false;
 
-    $comment = array();
+    if (!isset($_POST['g-recaptcha-response'])) {
+      // No reCAPTCHA response set, so treat it as a failed reCAPTCHA solution.
+    } else {
+      $response = $_POST['g-recaptcha-response'];
 
-    foreach (array('comment', 'author', 'email', 'url') as $k) {
-      if (isset($_POST[$k])) {
-        $comment[$k] = $_POST[$k];
-      } else {
-        $comment[$k] = '';
+      $body = 'secret=' . urlencode(self::$secretKey)
+                . '&response=' . urlencode($response)
+                . '&remoteip=' . urlencode($_SERVER['REMOTE_ADDR']);
+
+      $result = wp_safe_remote_post(
+        'https://www.google.com/recaptcha/api/siteverify',
+        array(
+          'body' => $body
+        )
+      );
+
+      if (is_array($result) && isset($result['body'])) {
+        $response = json_decode($result['body']);
+
+        if ($response !== null
+                && isset($response->success)
+                && $response->success == true) {
+
+          $captchaSolved = true;
+        }
       }
     }
 
-    $comment = base64_encode(serialize($comment));
+    if (!$captchaSolved) {
+      // If reCAPTCHA verify failed, bounce back to comment area.
 
-    if (parse_url(home_url(), PHP_URL_SCHEME) == 'https') {
-      $secure = true;
-    } else {
-      $secure = false;
+      // Copy any comment fields present in the POST variables to the
+      // $comment array, setting blank values for fields not present.
+
+      $comment = array();
+
+      foreach (array('comment', 'author', 'email', 'url') as $k) {
+        if (isset($_POST[$k])) {
+          $comment[$k] = $_POST[$k];
+        } else {
+          $comment[$k] = '';
+        }
+      }
+
+      // Encode comment for storage as cookie.
+
+      $comment = base64_encode(serialize($comment));
+
+      // Set cookie to store comment.
+
+      if (parse_url(home_url(), PHP_URL_SCHEME) == 'https') {
+        $secure = true;
+      } else {
+        $secure = false;
+      }
+
+      setcookie('e11_recaptcha_comment_' . COOKIEHASH, $comment, time() + 300, COOKIEPATH, COOKIE_DOMAIN, $secure);
+
+      // Detect if comment is a reply to another comment.  If so, ensure the
+      // parent comment ID is supplied as a GET parameter when reloading the
+      // post this comment was being made under.
+
+      $commentParent = 0;
+
+      if (isset($_POST['comment_parent'])) {
+        $commentParent = $_POST['comment_parent'];
+
+        if (!preg_match('/^\d+/', $commentParent)) {
+          $commentParent = 0;
+        }
+      }
+
+      $replyToCom = '';
+
+      if ($commentParent != 0) {
+        $replyToCom = '?replytocom=' . $commentParent;
+      }
+
+      // Redirect user back to comment form on post the comment was being
+      // made on.
+
+      $postURL = get_permalink($postID) . $replyToCom . '#respond';
+
+      wp_safe_redirect($postURL);
+
+      exit(0);
     }
-
-    setcookie('e11_recaptcha_comment_' . COOKIEHASH, $comment, time() + 300, COOKIEPATH, COOKIE_DOMAIN, $secure);
-
-    $postURL = get_permalink($postID) . '#respond';
-
-    wp_safe_redirect($postURL);
-
-    exit(0);
   }
 
+  /**
+   * If a user's comment did not pass the reCAPTCHA filter, it is stored as
+   * a cookie.  If that cookie is found, add its contents to the $wp_query
+   * object where it can be picked up by comment_form_captcha() and used to
+   * repopulate the comment form.  Clear that cookie here as well.
+   *
+   * @param $wp_query WP_Query object
+   * @return mixed Modified WP_Query object
+   */
   public static function load_comment_from_cookie($wp_query) {
     if (isset($_COOKIE['e11_recaptcha_comment_' . COOKIEHASH])) {
       
@@ -221,6 +317,9 @@ class e11Recaptcha {
     return $wp_query;
   }
 
+  /**
+   * Plugin initialization
+   */
   public static function init() {
 
     // Ensure function is called only once.

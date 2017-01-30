@@ -5,3 +5,11 @@
 #comment-form-e11-recaptcha {
   display: inline-block;
 }
+
+#comment-form-e11-recaptcha-failed {
+  display: inline-block;
+  width: 75%;
+  border: 2px solid #888;
+  background-color: #fe4;
+  padding: 0.5em;
+}

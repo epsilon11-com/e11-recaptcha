@@ -35,8 +35,8 @@ class e11RecaptchaAdmin {
 
     // Load stylesheet for plugin.
 
-    wp_register_style('e11-recaptcha.css', plugin_dir_url( __FILE__ ) . 'css/e11-recaptcha.css', array(), E11_RECAPTCHA_VERSION);
-    wp_enqueue_style('e11-recaptcha.css');
+    wp_register_style('e11-recaptcha-admin.css', plugin_dir_url( __FILE__ ) . 'css/e11-recaptcha-admin.css', array(), E11_RECAPTCHA_VERSION);
+    wp_enqueue_style('e11-recaptcha-admin.css');
 
     // Add plugin to WordPress hooks.
 

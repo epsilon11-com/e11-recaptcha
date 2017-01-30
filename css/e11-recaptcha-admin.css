@@ -1,0 +1,26 @@
+#e11-recaptcha-widget .control label {
+  display: block;
+  font-size: 90%;
+  font-weight: bold;
+}
+
+#e11-recaptcha-widget .control {
+  width: 100%;
+  margin: 0 0 0.5em 0;
+}
+
+#e11-recaptcha-widget .control input,
+#e11-recaptcha-widget .control select,
+#e11-recaptcha-widget .control textarea {
+  width: 100%;
+}
+
+#e11-recaptcha-widget .control textarea {
+  height: 9em;
+}
+
+.e11-recaptcha-row input[type="text"],
+.e11-recaptcha-row select
+{
+  min-width: 28em;
+}

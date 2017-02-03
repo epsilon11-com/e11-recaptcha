@@ -429,6 +429,6 @@ class e11Recaptcha {
     add_action('pre_comment_on_post', array('e11Recaptcha', 'check_comment_captcha'));
 
     add_action('register_form', array('e11Recaptcha', 'register_form_captcha'));
-    add_filter('registration_errors', array('e11Recaptcha', 'check_register_captcha'), 10, 3);
+    add_filter('registration_errors', array('e11Recaptcha', 'check_register_captcha'));
   }
 }

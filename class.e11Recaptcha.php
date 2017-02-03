@@ -27,14 +27,6 @@ class e11Recaptcha {
   private static $behaviorComments;
   private static $behaviorNewUsers;
   
-  public static function plugin_activation() {
-
-  }
-
-  public static function plugin_deactivation() {
-
-  }
-
   /**
    * Attach a reCAPTCHA field to the area after the "comment" field on comment
    * forms.
@@ -105,7 +97,7 @@ class e11Recaptcha {
       <p class="comment-form-e11-recaptcha-failed">
         <label for="comment-form-e11-recaptcha-failed"></label>
         <span id="comment-form-e11-recaptcha-failed">
-        ' . __('Failed to save comment.  Please solve the reCAPTCHA below to continue.') . '
+        ' . __('Failed to save comment.  Please solve the reCAPTCHA below to continue.', 'e11Recaptcha') . '
         </span>
       </p>
       ';
@@ -121,6 +113,38 @@ class e11Recaptcha {
       ';
 
     return $comment_fields;
+  }
+
+  private static function _captcha_successful() {
+    if (!isset($_POST['g-recaptcha-response'])) {
+      // No reCAPTCHA response set, so treat it as a failed reCAPTCHA solution.
+    } else {
+      $response = $_POST['g-recaptcha-response'];
+
+      $body = 'secret=' . urlencode(self::$secretKey)
+        . '&response=' . urlencode($response)
+        . '&remoteip=' . urlencode($_SERVER['REMOTE_ADDR']);
+
+      $result = wp_safe_remote_post(
+        'https://www.google.com/recaptcha/api/siteverify',
+        array(
+          'body' => $body
+        )
+      );
+
+      if (is_array($result) && isset($result['body'])) {
+        $response = json_decode($result['body']);
+
+        if ($response !== null
+          && isset($response->success)
+          && $response->success == true) {
+
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -147,39 +171,9 @@ class e11Recaptcha {
       return;
     }
 
-    // [TODO] Check reCAPTCHA.
+    // Check reCAPTCHA.
 
-    $captchaSolved = false;
-
-    if (!isset($_POST['g-recaptcha-response'])) {
-      // No reCAPTCHA response set, so treat it as a failed reCAPTCHA solution.
-    } else {
-      $response = $_POST['g-recaptcha-response'];
-
-      $body = 'secret=' . urlencode(self::$secretKey)
-                . '&response=' . urlencode($response)
-                . '&remoteip=' . urlencode($_SERVER['REMOTE_ADDR']);
-
-      $result = wp_safe_remote_post(
-        'https://www.google.com/recaptcha/api/siteverify',
-        array(
-          'body' => $body
-        )
-      );
-
-      if (is_array($result) && isset($result['body'])) {
-        $response = json_decode($result['body']);
-
-        if ($response !== null
-                && isset($response->success)
-                && $response->success == true) {
-
-          $captchaSolved = true;
-        }
-      }
-    }
-
-    if (!$captchaSolved) {
+    if (!self::_captcha_successful()) {
       // If reCAPTCHA verify failed, bounce back to comment area.
 
       // Copy any comment fields present in the POST variables to the
@@ -317,6 +311,45 @@ class e11Recaptcha {
     return $wp_query;
   }
 
+  public static function register_form_captcha() {
+
+    // Don't display reCAPTCHA control if disabled on new users.
+
+    if (self::$behaviorNewUsers == 'disabled') {
+      return;
+    }
+
+    // Add reCAPTCHA control after email field on registration form.
+
+?>
+      <p class="register-form-e11-recaptcha">
+        <label for="register-form-e11-recaptcha"></label>
+        <span id="register-form-e11-recaptcha" class="g-recaptcha" data-size="compact" data-sitekey="<?php echo esc_html(self::$siteKey); ?>" />
+      </p>
+<?php
+  }
+
+  public static function check_register_captcha($errors, $sanitized_user_login, $user_email) {
+
+    // Don't check reCAPTCHA if disabled on new users.
+
+    if (self::$behaviorNewUsers == 'disabled') {
+      return $errors;
+    }
+
+    // Check reCAPTCHA.  If it wasn't successfully solved, add an error to the
+    // list of registration errors.  This will prevent the user from being
+    // created.
+
+    if (!self::_captcha_successful()) {
+      $errors->add('captcha_error',
+          __('<strong>ERROR</strong>: Please solve the reCAPTCHA below.',
+                                                              'e11Recaptcha'));
+    }
+
+    return $errors;
+  }
+
   /**
    * Plugin initialization
    */
@@ -394,5 +427,8 @@ class e11Recaptcha {
     add_filter('comment_form_fields', array('e11Recaptcha', 'comment_form_captcha'));
     add_action('parse_query', array('e11Recaptcha', 'load_comment_from_cookie'));
     add_action('pre_comment_on_post', array('e11Recaptcha', 'check_comment_captcha'));
+
+    add_action('register_form', array('e11Recaptcha', 'register_form_captcha'));
+    add_filter('registration_errors', array('e11Recaptcha', 'check_register_captcha'), 10, 3);
   }
 }

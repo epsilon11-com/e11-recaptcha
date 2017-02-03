@@ -13,3 +13,9 @@
   background-color: #fe4;
   padding: 0.5em;
 }
+
+#register-form-e11-recaptcha {
+  margin: 0 auto 4px;
+
+  display: table;
+}

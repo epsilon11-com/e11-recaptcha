@@ -329,7 +329,7 @@ class e11Recaptcha {
 <?php
   }
 
-  public static function check_register_captcha($errors, $sanitized_user_login, $user_email) {
+  public static function check_register_captcha($errors) {
 
     // Don't check reCAPTCHA if disabled on new users.
 

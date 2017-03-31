@@ -25,9 +25,9 @@ Plugin Name: e11 reCAPTCHA
 Plugin URI: https://epsilon11.com/e11-reCAPTCHA
 Description: Add reCAPTCHA support to WordPress.
 Version: 1.0
-Author: epsilon11
+Author: er11
 Author URI: https://epsilon11.com/wordpress-plugins/
-License: BSD
+License: GPLv2 or later
 Text Domain: recaptcha
 */
 
@@ -38,9 +38,6 @@ define('E11_RECAPTCHA_VERSION', '1.0');
 if (!function_exists('add_action')) {
   exit;
 }
-
-register_activation_hook(__FILE__, array('e11Recaptcha', 'plugin_activation'));
-register_deactivation_hook(__FILE__, array('e11Recaptcha', 'plugin_deactivation'));
 
 require_once(plugin_dir_path(__FILE__) . 'class.e11Recaptcha.php');
 

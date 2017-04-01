@@ -39,4 +39,4 @@ either of these two forms or to require it on comments by all users.
 == Other notes ==
 
 Comments and feature requests are welcomed here or on
-[the project page on my site.](https://epsilon11.com/projects/e11-recaptcha)
+[the project page on my site.](https://epsilon11.com/e11-recaptcha)

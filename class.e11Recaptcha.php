@@ -324,7 +324,7 @@ class e11Recaptcha {
 ?>
       <p class="register-form-e11-recaptcha">
         <label for="register-form-e11-recaptcha"></label>
-        <span id="register-form-e11-recaptcha" class="g-recaptcha" data-size="compact" data-sitekey="<?php echo esc_html(self::$siteKey); ?>" />
+        <span id="register-form-e11-recaptcha" class="g-recaptcha" data-sitekey="<?php echo esc_html(self::$siteKey); ?>" />
       </p>
 <?php
   }

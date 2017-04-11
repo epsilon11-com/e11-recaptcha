@@ -18,4 +18,9 @@
   margin: 0 auto 4px;
 
   display: table;
+
+  transform:scale(0.9);
+  -webkit-transform:scale(0.9);
+  transform-origin:0 0;
+  -webkit-transform-origin:0 0;
 }

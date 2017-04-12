@@ -22,7 +22,7 @@
  */
 /*
 Plugin Name: e11 reCAPTCHA
-Plugin URI: https://epsilon11.com/e11-reCAPTCHA
+Plugin URI: https://epsilon11.com/e11-recaptcha
 Description: Add reCAPTCHA support to WordPress.
 Version: 1.0
 Author: er11

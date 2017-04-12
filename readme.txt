@@ -33,9 +33,9 @@ either of these two forms or to require it on comments by all users.
    "Adding reCAPTCHA to your site", then expand the "Keys" section.  Note the
    "Site key" and "Secret key" fields -- the e11 reCAPTCHA plugin will require
    these.
-4. Upload the plugin files to the "/wp-content/plugins/e11-recaptcha"
-   directory, or install the plugin through the WordPress plugins
-   screen directly.
+4. On your WordPress site, upload the plugin files to the
+   "/wp-content/plugins/e11-recaptcha" directory, or install the plugin
+   through the WordPress plugins screen directly.
 5. Activate the plugin through the "Plugins" screen in WordPress.
 6. Use the "Settings->e11 reCAPTCHA screen" to configure the plugin, making sure
    to supply the "Site key" and "Secret key" parameters here.
@@ -50,13 +50,9 @@ either of these two forms or to require it on comments by all users.
 3. The reCAPTCHA widget on the comment form appears after the comment
    <textarea> element.
 
+
 == Changelog ==
 
 = 1.0 =
 * Initial release.
 
-
-== Other notes ==
-
-Comments and feature requests are welcomed here or on
-[the project page on my site.](https://epsilon11.com/e11-recaptcha)

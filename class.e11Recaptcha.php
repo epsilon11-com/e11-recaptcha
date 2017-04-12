@@ -97,7 +97,7 @@ class e11Recaptcha {
       <p class="comment-form-e11-recaptcha-failed">
         <label for="comment-form-e11-recaptcha-failed"></label>
         <span id="comment-form-e11-recaptcha-failed">
-        ' . __('Failed to save comment.  Please solve the reCAPTCHA below to continue.', 'e11Recaptcha') . '
+        ' . __('Failed to save comment.  Please solve the reCAPTCHA below to continue.', 'e11-recaptcha') . '
         </span>
       </p>
       ';
@@ -115,10 +115,18 @@ class e11Recaptcha {
     return $comment_fields;
   }
 
+  /**
+   * Test whether the CAPTCHA solution was successful.
+   *
+   * @return bool true on success, false otherwise
+   */
   private static function _captcha_successful() {
     if (!isset($_POST['g-recaptcha-response'])) {
       // No reCAPTCHA response set, so treat it as a failed reCAPTCHA solution.
     } else {
+
+      // Send user's solution to reCAPTCHA service.
+
       $response = $_POST['g-recaptcha-response'];
 
       $body = 'secret=' . urlencode(self::$secretKey)
@@ -131,6 +139,8 @@ class e11Recaptcha {
           'body' => $body
         )
       );
+
+      // Test response from reCAPTCHA service.
 
       if (is_array($result) && isset($result['body'])) {
         $response = json_decode($result['body']);
@@ -275,8 +285,6 @@ class e11Recaptcha {
       if (!$failedUnpack) {
         // Sanitize fields loaded from cookie.
 
-        // [TODO] Is this the correct way to sanitize comment text?
-
         $comment['comment'] = apply_filters('pre_comment_content', $comment['comment']);
         $comment['comment'] = wp_unslash($comment['comment']);
         $comment['comment'] = esc_html($comment['comment']);
@@ -311,6 +319,9 @@ class e11Recaptcha {
     return $wp_query;
   }
 
+  /**
+   * Display reCAPTCHA box on user registration form.
+   */
   public static function register_form_captcha() {
 
     // Don't display reCAPTCHA control if disabled on new users.
@@ -320,7 +331,6 @@ class e11Recaptcha {
     }
 
     // Add reCAPTCHA control after email field on registration form.
-
 ?>
       <p class="register-form-e11-recaptcha">
         <label for="register-form-e11-recaptcha"></label>
@@ -329,6 +339,13 @@ class e11Recaptcha {
 <?php
   }
 
+  /**
+   * Test reCAPTCHA solution received from user registration form.
+   *
+   * @param array $errors Incoming list of errors that have occurred during
+   *                      this attempted user registration
+   * @return array List of errors, possibly including a new reCAPTCHA error
+   */
   public static function check_register_captcha($errors) {
 
     // Don't check reCAPTCHA if disabled on new users.
@@ -344,7 +361,7 @@ class e11Recaptcha {
     if (!self::_captcha_successful()) {
       $errors->add('captcha_error',
           __('<strong>ERROR</strong>: Please solve the reCAPTCHA below.',
-                                                              'e11Recaptcha'));
+                                                              'e11-recaptcha'));
     }
 
     return $errors;

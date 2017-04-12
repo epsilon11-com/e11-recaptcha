@@ -28,7 +28,7 @@ Version: 1.0
 Author: er11
 Author URI: https://epsilon11.com/wordpress-plugins/
 License: GPLv2 or later
-Text Domain: recaptcha
+Text Domain: e11-recaptcha
 */
 
 define('E11_RECAPTCHA_VERSION', '1.0');

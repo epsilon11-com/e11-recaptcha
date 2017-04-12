@@ -59,14 +59,14 @@ class e11RecaptchaAdmin {
 
     add_settings_section(
       'e11_recaptcha_section_api',
-      __('reCAPTCHA API Keys', 'e11Recaptcha'),
+      __('reCAPTCHA API Keys', 'e11-recaptcha'),
       array('e11RecaptchaAdmin', 'section_api_cb'),
       'e11_recaptcha'
     );
 
     add_settings_field(
       'e11_recaptcha_field_site_key',
-      __('Site key', 'e11Recaptcha'),
+      __('Site key', 'e11-recaptcha'),
       array('e11RecaptchaAdmin', 'field_site_key_cb'),
       'e11_recaptcha',
       'e11_recaptcha_section_api',
@@ -78,7 +78,7 @@ class e11RecaptchaAdmin {
 
     add_settings_field(
       'e11_recaptcha_field_secret_key',
-      __('Secret key', 'e11Recaptcha'),
+      __('Secret key', 'e11-recaptcha'),
       array('e11RecaptchaAdmin', 'field_secret_key_cb'),
       'e11_recaptcha',
       'e11_recaptcha_section_api',
@@ -92,14 +92,14 @@ class e11RecaptchaAdmin {
 
     add_settings_section(
       'e11_recaptcha_section_behavior',
-      __('Behavior', 'e11Recaptcha'),
+      __('Behavior', 'e11-recaptcha'),
       array('e11RecaptchaAdmin', 'section_behavior_cb'),
       'e11_recaptcha'
     );
 
     add_settings_field(
       'e11_recaptcha_field_behavior_comments',
-      __('Comments', 'e11Recaptcha'),
+      __('Comments', 'e11-recaptcha'),
       array('e11RecaptchaAdmin', 'field_behavior_comments_cb'),
       'e11_recaptcha',
       'e11_recaptcha_section_behavior',
@@ -111,7 +111,7 @@ class e11RecaptchaAdmin {
 
     add_settings_field(
       'e11_recaptcha_field_behavior_new_users',
-      __('New users', 'e11Recaptcha'),
+      __('New users', 'e11-recaptcha'),
       array('e11RecaptchaAdmin', 'field_behavior_new_users_cb'),
       'e11_recaptcha',
       'e11_recaptcha_section_behavior',
@@ -133,7 +133,7 @@ class e11RecaptchaAdmin {
             not yet have a Google reCAPTCHA account, 
             <a href="https://www.google.com/recaptcha">please create one</a>
             to obtain the necessary credentials to continue.</p>
-      ', 'e11Recaptcha');
+      ', 'e11-recaptcha');
   }
 
   /**
@@ -145,7 +145,7 @@ class e11RecaptchaAdmin {
     echo __(
       '<p>The following settings determine when users will be required to
           solve reCAPTCHAs.</p>
-      ', 'e11Recaptcha');
+      ', 'e11-recaptcha');
   }
 
   /**
@@ -171,7 +171,7 @@ class e11RecaptchaAdmin {
         . esc_attr($siteKey)
         . '" />
       <p class="description">'
-      . esc_html_x('Site key as provided by Google for your reCAPTCHA account', 'e11Recaptcha')
+      . esc_html_x('Site key as provided by Google for your reCAPTCHA account', 'e11-recaptcha')
       . '</p>
     ';
   }
@@ -199,7 +199,7 @@ class e11RecaptchaAdmin {
       . esc_attr($secretKey)
       . '" />
       <p class="description">'
-      . esc_html_x('Secret key as provided by Google for your reCAPTCHA account', 'e11Recaptcha')
+      . esc_html_x('Secret key as provided by Google for your reCAPTCHA account', 'e11-recaptcha')
       . '</p>
     ';
   }
@@ -242,21 +242,21 @@ class e11RecaptchaAdmin {
         <option value="all_comments" '
       . selected($behavior, 'all_comments', false)
       . '>'
-      . esc_html_x('Enabled for all comments', 'e11Recaptcha')
+      . esc_html_x('Enabled for all comments', 'e11-recaptcha')
       . '</option>
         <option value="not_logged_in" '
       . selected($behavior, 'not_logged_in', false)
       . '>'
-      . esc_html_x('Enabled for comments by users not logged in', 'e11Recaptcha')
+      . esc_html_x('Enabled for comments by users not logged in', 'e11-recaptcha')
       . '</option>
         <option value="disabled" '
           . selected($behavior, 'disabled', false)
       . '>'
-      . esc_html_x('Disabled', 'e11Recaptcha')
+      . esc_html_x('Disabled', 'e11-recaptcha')
       . '</option>
       </select>
       <p class="description">'
-      . esc_html_x('Require users to solve a reCAPTCHA to post a comment', 'e11Recaptcha')
+      . esc_html_x('Require users to solve a reCAPTCHA to post a comment', 'e11-recaptcha')
       . '</p>
     ';
   }
@@ -298,16 +298,16 @@ class e11RecaptchaAdmin {
         <option value="enabled" '
       . selected($behavior, 'enabled', false)
       . '>'
-      . esc_html_x('Enabled for user registrations', 'e11Recaptcha')
+      . esc_html_x('Enabled for user registrations', 'e11-recaptcha')
       . '</option>
         <option value="disabled" '
       . selected($behavior, 'disabled', false)
       . '>'
-      . esc_html_x('Disabled', 'e11Recaptcha')
+      . esc_html_x('Disabled', 'e11-recaptcha')
       . '</option>
       </select>
       <p class="description">'
-      . esc_html_x('Require new users to solve a reCAPTCHA to create an account', 'e11Recaptcha')
+      . esc_html_x('Require new users to solve a reCAPTCHA to create an account', 'e11-recaptcha')
       . '</p>
     ';
   }
